@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Maple Genesis Analysis</title>
+    <link rel="icon" href="/assets/favicon.png" />
+    <link rel="stylesheet" href="/styles.css" />
+    <meta name="robots" content="noindex"> <!-- 준비중이므로 검색 제외 -->
+</head>
+
+<body>
+    <header class="wrap">
+        <h1>Maple Genesis Analysis</h1>
+        <p>레벨 255+ 캐릭터의 제네시스 무기 보유 분석</p>
+    </header>
+
+    <main class="wrap">
+        <section class="card">
+            <h2>대시보드 (준비중)</h2>
+            <p>현재 데이터 수집/DB 설계 중입니다. 곧 통계가 제공됩니다.</p>
+            <ul>
+                <li>검사한 캐릭터 수</li>
+                <li>Genesis 무기 보유 수/비율</li>
+                <li>월드별 분포</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>로드맵</h2>
+            <ol>
+                <li>API 키 발급 → Netlify Functions 프록시 구성</li>
+                <li>실데이터 연결 → 캐시/페이지네이션</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer class="wrap small">
+        © <span id="y"></span> Maple Genesis Analysis
+    </footer>
+    <script>document.getElementById('y').textContent = new Date().getFullYear()</script>
+</body>
+
+</html>

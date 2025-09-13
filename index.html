@@ -1,45 +1,51 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Maple Genesis Analysis</title>
-    <link rel="icon" href="/assets/favicon.png" />
-    <link rel="stylesheet" href="/styles.css" />
-    <meta name="robots" content="noindex"> <!-- 준비중이므로 검색 제외 -->
+    <meta charset="UTF-8">
+    <title>Maple Analysis Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
-    <header class="wrap">
-        <h1>Maple Genesis Analysis</h1>
-        <p>레벨 255+ 캐릭터의 제네시스 무기 보유 분석</p>
-    </header>
+    <h1>Maple Analysis Dashboard</h1>
 
-    <main class="wrap">
-        <section class="card">
-            <h2>대시보드 (준비중)</h2>
-            <p>현재 데이터 수집/DB 설계 중입니다. 곧 통계가 제공됩니다.</p>
-            <ul>
-                <li>검사한 캐릭터 수</li>
-                <li>Genesis 무기 보유 수/비율</li>
-                <li>월드별 분포</li>
-            </ul>
-        </section>
+    <!-- 1. 평균 레벨과 비율 -->
+    <section>
+        <h2>평균 레벨 & 비율</h2>
+        <canvas id="avgLevelChart"></canvas>
+        <canvas id="worldRatioChart"></canvas>
+    </section>
 
-        <section class="card">
-            <h2>로드맵</h2>
-            <ol>
-                <li>API 키 발급 → Netlify Functions 프록시 구성</li>
-                <li>실데이터 연결 → 캐시/페이지네이션</li>
-            </ol>
-        </section>
-    </main>
+    <!-- 2. 분포 차트 -->
+    <section>
+        <h2>레벨 분포 (예시)</h2>
+        <canvas id="levelHistogram"></canvas>
+    </section>
 
-    <footer class="wrap small">
-        © <span id="y"></span> Maple Genesis Analysis
-    </footer>
-    <script>document.getElementById('y').textContent = new Date().getFullYear()</script>
+    <!-- 3. 캐릭터 조회 -->
+    <section>
+        <h2>캐릭터 검색</h2>
+        <select id="questSelect">
+            <option value="0">해방 안함 (0)</option>
+            <option value="1">제네시스 해방 (1)</option>
+            <option value="2">데스티니 해방 (2)</option>
+        </select>
+        <button onclick="fetchCharacters()">조회</button>
+        <table id="charTable">
+            <thead>
+                <tr>
+                    <th>이름</th>
+                    <th>직업</th>
+                    <th>레벨</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <script src="script.js"></script>
 </body>
 
 </html>

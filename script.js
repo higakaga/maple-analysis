@@ -1,67 +1,99 @@
-const API_BASE = "https://higakaga.store";
-
-// --- 1. 요약 데이터 가져오기 ---
+// API 호출 함수
 async function fetchSummary() {
-    const res = await fetch(`${API_BASE}/summary`);
-    const data = await res.json();
+    try {
+        const response = await fetch("https://higakaga.store/summary");
+        const data = await response.json();
 
-    renderAvgLevelChart(data);
-    renderWorldRatioChart(data);
+        renderSummary(data);
+        renderCharts(data);
+
+    } catch (err) {
+        console.error("API 호출 실패:", err);
+        alert("데이터를 불러오는데 실패했습니다.");
+    }
 }
 
-// 평균 레벨 차트 (막대 그래프)
-function renderAvgLevelChart(data) {
-    const ctx = document.getElementById("avgLevelChart").getContext("2d");
-    const labels = Object.keys(data).filter(k => k !== "None");
-    const levels = labels.map(k => data[k].avg_level);
+// 카드 렌더링
+function renderSummary(data) {
+    const container = document.getElementById("summary");
+    container.innerHTML = `
+    <h2>요약 결과</h2>
+    <div class="card">
+      <p><b>[0 그룹]</b> 평균 레벨: ${data["0"].avg_level}, Top World: ${data["0"].top_world} (${(data["0"].top_ratio * 100).toFixed(1)}%)</p>
+      <p><b>[1 그룹]</b> 평균 레벨: ${data["1"].avg_level}, Top World: ${data["1"].top_world} (${(data["1"].top_ratio * 100).toFixed(1)}%)</p>
+      <p><b>[2 그룹]</b> 평균 레벨: ${data["2"].avg_level}, Top World: ${data["2"].top_world} (${(data["2"].top_ratio * 100).toFixed(1)}%)</p>
+    </div>
+  `;
+}
 
-    new Chart(ctx, {
-        type: "bar",
+// 차트 렌더링
+function renderCharts(data) {
+    // 기존 차트 객체 있으면 제거 (버튼 여러번 눌러도 중첩 방지)
+    if (window.pieChart) window.pieChart.destroy();
+    if (window.donutChart) window.donutChart.destroy();
+    if (window.histChart) window.histChart.destroy();
+
+    // Pie Chart (Top Ratio)
+    const pieCtx = document.getElementById("pieChart").getContext("2d");
+    window.pieChart = new Chart(pieCtx, {
+        type: "pie",
         data: {
-            labels: labels,
+            labels: ["그룹0", "그룹1", "그룹2"],
             datasets: [{
-                label: "평균 레벨",
-                data: levels,
-                backgroundColor: ["#3498db", "#2ecc71", "#e67e22"]
+                label: "Top World Ratio",
+                data: [
+                    data["0"].top_ratio,
+                    data["1"].top_ratio,
+                    data["2"].top_ratio
+                ],
+                backgroundColor: ["#ff6384", "#36a2eb", "#ffce56"]
             }]
         }
     });
-}
 
-// 월드 비율 차트 (도넛 차트)
-function renderWorldRatioChart(data) {
-    const ctx = document.getElementById("worldRatioChart").getContext("2d");
-    const labels = Object.keys(data).filter(k => k !== "None");
-    const ratios = labels.map(k => data[k].top_ratio);
-    const worlds = labels.map(k => data[k].top_world);
-
-    new Chart(ctx, {
+    // Donut Chart (평균 레벨)
+    const donutCtx = document.getElementById("donutChart").getContext("2d");
+    window.donutChart = new Chart(donutCtx, {
         type: "doughnut",
         data: {
-            labels: worlds,
+            labels: ["그룹0", "그룹1", "그룹2"],
             datasets: [{
-                label: "비율",
-                data: ratios,
-                backgroundColor: ["#9b59b6", "#f1c40f", "#e74c3c"]
+                label: "평균 레벨",
+                data: [
+                    data["0"].avg_level,
+                    data["1"].avg_level,
+                    data["2"].avg_level
+                ],
+                backgroundColor: ["#4bc0c0", "#9966ff", "#ff9f40"]
             }]
+        }
+    });
+
+    // Histogram (평균 레벨 막대 그래프)
+    const histCtx = document.getElementById("histChart").getContext("2d");
+    window.histChart = new Chart(histCtx, {
+        type: "bar",
+        data: {
+            labels: ["그룹0", "그룹1", "그룹2"],
+            datasets: [{
+                label: "평균 레벨",
+                data: [
+                    data["0"].avg_level,
+                    data["1"].avg_level,
+                    data["2"].avg_level
+                ],
+                backgroundColor: ["#36a2eb", "#ff6384", "#ffcd56"]
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: false
+                }
+            }
         }
     });
 }
 
-// --- 2. 캐릭터 조회 ---
-async function fetchCharacters() {
-    const q = document.getElementById("questSelect").value;
-    const res = await fetch(`${API_BASE}/characters?q=${q}`);
-    const rows = await res.json();
-
-    const tbody = document.querySelector("#charTable tbody");
-    tbody.innerHTML = "";
-    rows.forEach(r => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${r.character_name}</td><td>${r.character_class}</td><td>${r.character_level}</td>`;
-        tbody.appendChild(tr);
-    });
-}
-
-// 초기 로드
-fetchSummary();
+// ✅ 버튼 클릭 시 API 호출 실행
+document.getElementById("loadData").addEventListener("click", fetchSummary);
